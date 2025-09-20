@@ -11,7 +11,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 st.set_page_config(page_title="Precio Gasolina - Regresión Lineal", page_icon="⛽", layout="centered")
 
-st.title("⛽ Predicción del precio de gasolina con Regresión Lineal (sklearn)")
+st.title("⛽ Predicción del precio de gasolina")
 st.caption("Archivo usado: **gasolina_precios.csv** | Variables: estado (categórica), año, mes → precio")
 
 DATA_PATH = "gasolina_precios.csv"
