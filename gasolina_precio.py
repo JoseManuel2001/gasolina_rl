@@ -14,7 +14,7 @@ st.set_page_config(page_title="Precio Gasolina - Regresión Lineal", page_icon="
 st.title("⛽ Predicción del precio de gasolina con Regresión Lineal (sklearn)")
 st.caption("Archivo usado: **gasolina_precios (1).csv** | Variables: estado (categórica), año, mes → precio")
 
-DATA_PATH = "/content/data_sample/gasolina_precios.csv"
+DATA_PATH = "gasolina_precios.csv"
 
 @st.cache_data
 def load_data():
