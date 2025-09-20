@@ -12,11 +12,17 @@ from sklearn.metrics import mean_squared_error, r2_score
 st.set_page_config(page_title="Precio Gasolina - Regresión Lineal", page_icon="⛽", layout="centered")
 
 st.title("⛽ Predicción del precio de gasolina con Regresión Lineal (sklearn)")
-st.caption("Archivo usado: **gasolina_precios (1).csv** | Variables: estado (categórica), año, mes → precio")
+st.caption("Archivo usado: **gasolina_precios.csv** | Variables: estado (categórica), año, mes → precio")
 
 DATA_PATH = "gasolina_precios.csv"
 
-@st.cache_data
+# Cache compatible (Streamlit >=1.18 usa cache_data; versiones previas usan cache)
+try:
+    cache_func = st.cache_data
+except AttributeError:
+    cache_func = st.cache
+
+@cache_func
 def load_data():
     tries = [
         dict(sep=",", encoding="utf-8"),
@@ -72,7 +78,10 @@ model = Pipeline(steps=[
 model.fit(X_train, y_train)
 
 y_pred = model.predict(X_test)
-rmse = mean_squared_error(y_test, y_pred, squared=False)
+
+# Compatibilidad con scikit-learn antiguo: calcular RMSE como sqrt(MSE) sin 'squared=False'
+mse = mean_squared_error(y_test, y_pred)
+rmse = float(np.sqrt(mse))
 r2 = r2_score(y_test, y_pred)
 
 st.subheader("📈 Métricas del modelo (test)")
@@ -114,6 +123,7 @@ with st.expander("🧠 Ver coeficientes (interpretación)", expanded=False):
     try:
         ohe_feature_names = ohe.get_feature_names_out(["estado"]).tolist()
     except Exception:
+        # Compatibilidad con versiones antiguas
         ohe_feature_names = list(ohe.get_feature_names(["estado"]))
     feature_names = ohe_feature_names + ["año", "mes"]
     coefs = model.named_steps["reg"].coef_
@@ -121,4 +131,5 @@ with st.expander("🧠 Ver coeficientes (interpretación)", expanded=False):
     coef_df = pd.DataFrame({"feature": feature_names, "coef": coefs}).sort_values("feature")
     st.write("Intercepto (β0):", round(float(intercept), 6))
     st.dataframe(coef_df.reset_index(drop=True))
+
 
