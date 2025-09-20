@@ -101,7 +101,6 @@ with colB:
     anio_in = st.number_input(
         "Año",
         min_value=int(df["año"].min()),
-        max_value=int(df["año"].max()),
         value=int(df["año"].max()),
         step=1
     )
@@ -118,18 +117,5 @@ if st.button("Predecir precio"):
     pred = model.predict(input_df)[0]
     st.success(f"Precio estimado: **{pred:,.4f}**")
 
-with st.expander("🧠 Ver coeficientes (interpretación)", expanded=False):
-    ohe = model.named_steps["prep"].named_transformers_["cat"]
-    try:
-        ohe_feature_names = ohe.get_feature_names_out(["estado"]).tolist()
-    except Exception:
-        # Compatibilidad con versiones antiguas
-        ohe_feature_names = list(ohe.get_feature_names(["estado"]))
-    feature_names = ohe_feature_names + ["año", "mes"]
-    coefs = model.named_steps["reg"].coef_
-    intercept = model.named_steps["reg"].intercept_
-    coef_df = pd.DataFrame({"feature": feature_names, "coef": coefs}).sort_values("feature")
-    st.write("Intercepto (β0):", round(float(intercept), 6))
-    st.dataframe(coef_df.reset_index(drop=True))
 
 
